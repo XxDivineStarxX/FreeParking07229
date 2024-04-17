@@ -28,6 +28,7 @@ class ParkingInfoActivity : AppCompatActivity() {
 
     inner class ParkingInfoViewModel(parkingLot:ParkingLot):ViewModel(){
 
+        var parking_lot_name = MutableLiveData<String>()
         var longitude = MutableLiveData<Double>()
         var latitude = MutableLiveData<Double>()
         var location = MutableLiveData<String>()
@@ -37,6 +38,7 @@ class ParkingInfoActivity : AppCompatActivity() {
         var parking_picture = MutableLiveData<String>()
 
         init{
+            parking_lot_name.value=parkingLot.parking_name
             longitude.value=parkingLot.longitude
             latitude.value=parkingLot.latitude
             location.value=parkingLot.location
@@ -58,6 +60,7 @@ class ParkingInfoActivity : AppCompatActivity() {
         val parkingInfoViewModel = ParkingInfoViewModel(ParkingLot())
 
         val parkingImgV = findViewById<ImageView>(R.id.parking_image_view)
+        val nameTxtV = findViewById<TextView>(R.id.parking_lot_name)
         val longTxtV = findViewById<TextView>(R.id.longitude_text)
         val latTxtV = findViewById<TextView>(R.id.latitude_text)
         val locTxtV = findViewById<TextView>(R.id.location_text)
@@ -79,6 +82,7 @@ class ParkingInfoActivity : AppCompatActivity() {
                     }
                 }
 
+                parkingInfoViewModel.parking_lot_name.value=parkingLot.parking_name
                 parkingInfoViewModel.longitude.value = parkingLot.longitude
                 parkingInfoViewModel.latitude.value = parkingLot.latitude
                 parkingInfoViewModel.location.value = parkingLot.location
@@ -91,6 +95,9 @@ class ParkingInfoActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
+        parkingInfoViewModel.parking_lot_name.observe(this, Observer {name->
+            nameTxtV.text=name.toString()
+        })
         parkingInfoViewModel.longitude.observe(this, Observer {longitude->
             longTxtV.text=longitude.toString()
         })

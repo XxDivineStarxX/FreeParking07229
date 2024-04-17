@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.freeparking07229.Activity.AdminActivity
 import com.example.freeparking07229.Activity.HistoryActivity
 import com.example.freeparking07229.Activity.IdentityActivity
+import com.example.freeparking07229.Activity.ParkingInfoActivity
 import com.example.freeparking07229.Activity.ParkingMainActivity
 import com.example.freeparking07229.Activity.ReservationActivity
 import com.example.freeparking07229.Activity.userInfoActivity
@@ -57,8 +58,8 @@ class HomeFragment : Fragment() {
         }
 
         binding.S2.setOnClickListener {
-            val intent = Intent(activity, ParkingMainActivity::class.java).apply {
-                putExtra("MODE","recommended")
+            val intent = Intent(activity, ParkingInfoActivity::class.java).apply {
+                putExtra(ParkingInfoActivity.PARKING_LOT_NAME,"北京停车场")
             }
             startActivity(intent)
         }
