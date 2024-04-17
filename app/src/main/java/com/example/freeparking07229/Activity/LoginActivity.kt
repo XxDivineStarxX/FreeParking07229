@@ -2,8 +2,10 @@ package com.example.freeparking07229.Activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -23,16 +25,18 @@ class LoginActivity : AppCompatActivity() {
         val passwordEditText: EditText = findViewById(R.id.passwordEditText)
         val loginButton: Button = findViewById(R.id.loginButton)
         val registerButton: Button = findViewById(R.id.registerButton)
+        val progressBar: ProgressBar = findViewById(R.id.progressbar)
 
         loginButton.setOnClickListener {
             val username = usernameEditText.text.toString()
             val password = passwordEditText.text.toString()
 
             CoroutineScope(Dispatchers.Main).launch {
+                progressBar.visibility= View.VISIBLE
                 val isLoginSuccessful = withContext(Dispatchers.IO) {
                     mySQLHelper.checkLogin(username, password)
                 }
-
+                progressBar.visibility= View.GONE
                 if (isLoginSuccessful) {
                     // Successful login, navigate to another activity
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
