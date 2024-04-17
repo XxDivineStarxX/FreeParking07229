@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".Activity.RegisterActivity">
+
+    <EditText
+        android:id="@+id/registerUsernameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入用户名"/>
+
+    <EditText
+        android:id="@+id/registerPasswordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/registerUsernameEditText"
+        android:layout_marginTop="8dp"
+        android:inputType="textPassword"
+        android:hint="请输入密码"/>
+
+    <EditText
+        android:id="@+id/registerEmailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/registerUsernameEditText"
+        android:layout_marginTop="66dp"
+        android:hint="请输email" />
+
+    <EditText
+        android:id="@+id/registerIdentityEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/registerUsernameEditText"
+        android:layout_marginTop="123dp"
+        android:hint="请输入身份码 0为普通用户，1为管理员" />
+
+    <Button
+        android:id="@+id/confirmRegisterButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/registerPasswordEditText"
+        android:layout_marginTop="157dp"
+        android:text="确认注册" />
+</RelativeLayout>
