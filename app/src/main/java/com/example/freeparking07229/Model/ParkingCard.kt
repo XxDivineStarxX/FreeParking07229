@@ -3,6 +3,7 @@ package com.example.freeparking07229.Model
 import java.io.Serializable
 
 data class ParkingCard(var parking_id:String="",
+                       var account:String="",
                        var name:String="",
                        var sex:String="",
                        var id_number:String="",

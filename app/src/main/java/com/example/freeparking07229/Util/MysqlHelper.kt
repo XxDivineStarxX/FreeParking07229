@@ -1,6 +1,7 @@
 package com.example.freeparking07229.Util
 
 import android.util.Log
+import com.example.freeparking07229.Model.ParkingCard
 import com.example.freeparking07229.Model.ParkingLot
 import com.example.freeparking07229.Model.ParkingSpace
 import kotlinx.coroutines.Dispatchers
@@ -142,5 +143,31 @@ class MysqlHelper {
         list
     }
 
+    suspend fun getParkCardInfoByAccount(account:String):ParkingCard = withContext(Dispatchers.IO){
+        val connection=establishConnection()
+        val sql ="SELECT * FROM parkingcard WHERE account = ? "
+        var item =ParkingCard()
+        try {
+            val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+            preparedStatement.setString(1, account)
+            val rs:ResultSet=preparedStatement.executeQuery()
 
+            if(rs.next()){
+                item.account= rs.getString("account")
+                item.parking_id = rs.getString("parking_id")
+                item.name = rs.getString("name")
+                item.sex = rs.getString("sex")
+                item.id_number = rs.getString("id_number")
+                item.car_number = rs.getString("car_number")
+                item.person_picture = rs.getString("person_picture")
+                item.phone_number = rs.getString("phone_number")
+            }
+            Log.d("Mysqlhelper","成功获取用户卡"+item.toString())
+        }catch (e:Exception){
+            e.printStackTrace()
+        }finally {
+            connection.close()
+        }
+        item
+    }
 }

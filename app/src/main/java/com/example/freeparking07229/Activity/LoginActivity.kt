@@ -39,6 +39,9 @@ class LoginActivity : AppCompatActivity() {
                 progressBar.visibility= View.GONE
                 if (isLoginSuccessful) {
                     // Successful login, navigate to another activity
+                    val editor = getSharedPreferences("data", MODE_PRIVATE).edit().apply{
+                        putString("account",username)//将账户名存入SP
+                    }
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
                 } else {

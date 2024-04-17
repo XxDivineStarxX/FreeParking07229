@@ -65,7 +65,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.S3.setOnClickListener {
-            val intent = Intent(activity, ReservationActivity::class.java)
+            val intent = Intent(activity, ParkingMainActivity::class.java)
             startActivity(intent)
         }
 
