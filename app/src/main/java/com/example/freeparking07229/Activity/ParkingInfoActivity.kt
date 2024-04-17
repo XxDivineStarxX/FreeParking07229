@@ -1,5 +1,6 @@
 package com.example.freeparking07229.Activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
@@ -23,7 +24,7 @@ import kotlinx.coroutines.withContext
 class ParkingInfoActivity : AppCompatActivity() {
 
     companion object{
-        var PARKING_LOT_NAME:String = ""
+        var PARKING_LOT_NAME:String = "PARKING_LOT_NAME"
     }
 
     inner class ParkingInfoViewModel(parkingLot:ParkingLot):ViewModel(){
@@ -124,7 +125,10 @@ class ParkingInfoActivity : AppCompatActivity() {
             Toast.makeText(this,"收藏该停车场",Toast.LENGTH_LONG).show()
         }
         btn_res.setOnClickListener {
-            Toast.makeText(this,"预约该停车场",Toast.LENGTH_LONG).show()
+           val intent =  Intent(this,SpaceActivity::class.java).apply {
+               putExtra(SpaceActivity.PARKINGLOT_NAME,parkingName)
+           }
+            startActivity(intent)
         }
         btn_pay.setOnClickListener {
             Toast.makeText(this,"选择支付",Toast.LENGTH_LONG).show()

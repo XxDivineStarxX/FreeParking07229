@@ -2,6 +2,7 @@ package com.example.freeparking07229.Util
 
 import android.util.Log
 import com.example.freeparking07229.Model.ParkingLot
+import com.example.freeparking07229.Model.ParkingSpace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.Connection
@@ -115,4 +116,31 @@ class MysqlHelper {
         }
         item
     }
+
+    suspend fun getParkSpaceInfoByName(parkingLotName:String):ArrayList<ParkingSpace> = withContext(Dispatchers.IO){
+        val connection=establishConnection()
+        val sql ="SELECT * FROM parkingspace WHERE parking_lot = ? "
+        val list =ArrayList<ParkingSpace>()
+        try {
+            val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+            preparedStatement.setString(1, parkingLotName)
+            val rs:ResultSet=preparedStatement.executeQuery()
+
+            while(rs.next()){
+                var item=ParkingSpace()
+                item.parking_lot = rs.getString("parking_lot")
+                item.space_id=rs.getInt("space_id")
+                item.state=rs.getInt("state")
+                list.add(item)
+            }
+            Log.d("Mysqlhelper","添加结束后的列表"+list.toString())
+        }catch (e:Exception){
+            e.printStackTrace()
+        }finally {
+            connection.close()
+        }
+        list
+    }
+
+
 }
