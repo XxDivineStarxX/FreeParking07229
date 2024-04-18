@@ -2,6 +2,7 @@ package com.example.freeparking07229.Activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -33,14 +34,22 @@ class LoginActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.Main).launch {
                 progressBar.visibility= View.VISIBLE
-                val isLoginSuccessful = withContext(Dispatchers.IO) {
-                    mySQLHelper.checkLogin(username, password)
+                var isLoginSuccessful = false
+                var identity = 0
+                withContext(Dispatchers.IO) {
+                    isLoginSuccessful = mySQLHelper.checkLogin(username, password)
+                    identity = mySQLHelper.LoginIdentity(username, password)
                 }
+//                val identity = withContext(Dispatchers.IO) {
+//                    mySQLHelper.LoginIdentity(username, password)
+//                }
                 progressBar.visibility= View.GONE
                 if (isLoginSuccessful) {
                     // Successful login, navigate to another activity
                     val editor = getSharedPreferences("data", MODE_PRIVATE).edit().apply{
                         putString("account",username)//将账户名存入SP
+                        putInt("identity",identity)//将用户身份存入SP
+                        apply()
                     }
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)

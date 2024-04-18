@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.freeparking07229.Model.ParkingCard
 import com.example.freeparking07229.Model.ParkingLot
 import com.example.freeparking07229.Model.ParkingSpace
+import com.example.freeparking07229.Model.UsingSpace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.Connection
@@ -59,6 +60,25 @@ class MysqlHelper {
         result
     }
 
+    suspend fun LoginIdentity(username: String, password: String): Int = withContext(Dispatchers.IO) {
+        val connection = establishConnection()
+        val sql = "SELECT * FROM user WHERE account=? AND password=?" //查询语句
+        var result = 0
+
+        try {
+            val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+            preparedStatement.setString(1, username)
+            preparedStatement.setString(2, password)
+            val resultSet: ResultSet = preparedStatement.executeQuery()
+            if(resultSet.next())
+                result=resultSet.getInt("identity")
+
+        } finally {
+            connection.close()
+        }
+        result
+    }
+
     suspend fun getParkingList():ArrayList<ParkingLot> = withContext(Dispatchers.IO){
             val connection=establishConnection()
             val sql ="SELECT * FROM parkinglot"
@@ -89,6 +109,26 @@ class MysqlHelper {
             }
         list
         }
+
+    suspend fun getCardIDInfoByAccount(account:String):String = withContext(Dispatchers.IO){
+        val connection=establishConnection()
+        val sql ="SELECT * FROM parkingcard WHERE account = ? "
+        var item=ParkingCard()
+        try {
+            val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+            preparedStatement.setString(1, account)
+            val rs:ResultSet=preparedStatement.executeQuery()
+
+            if(rs.next()){
+                item.parking_id=rs.getString("parking_id")
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }finally {
+            connection.close()
+        }
+        item.parking_id
+    }
 
     suspend fun getParkLotInfoByName(parkingLotName:String):ParkingLot = withContext(Dispatchers.IO){
         val connection=establishConnection()
@@ -134,7 +174,6 @@ class MysqlHelper {
                 item.state=rs.getInt("state")
                 list.add(item)
             }
-            Log.d("Mysqlhelper","添加结束后的列表"+list.toString())
         }catch (e:Exception){
             e.printStackTrace()
         }finally {
@@ -170,4 +209,56 @@ class MysqlHelper {
         }
         item
     }
+
+    suspend fun InsertUsingSpace(usingSpace: UsingSpace){
+        withContext(Dispatchers.IO){
+            val connection=establishConnection()
+            val sql ="INSERT INTO usingspace (parking_lot,space_id,parking_id,car_number,is_reserved,lock_time,time,cost)" +
+                    " VALUES(?,?,?,?,?,?,?,?)"
+            try {
+                val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+                preparedStatement.setString(1, usingSpace.parking_lot)
+                preparedStatement.setInt(2, usingSpace.space_id)
+                preparedStatement.setString(3, usingSpace.parking_id)
+                preparedStatement.setString(4, usingSpace.car_number)
+                preparedStatement.setInt(5, usingSpace.is_reserved)
+                if(usingSpace.is_reserved==1){
+                    preparedStatement.setString(6, null)
+                    preparedStatement.setString(7, null)
+                    preparedStatement.setBigDecimal(8, null)
+                }else{
+                    preparedStatement.setTimestamp(6, usingSpace.lock_time)
+                    preparedStatement.setString(7, usingSpace.time)
+                    preparedStatement.setBigDecimal(8, usingSpace.cost.toBigDecimal())
+                }
+
+                preparedStatement.executeUpdate()
+                Log.d("Mysqlhelper","成功插入信息"+usingSpace.toString())
+            }catch (e:Exception){
+                e.printStackTrace()
+            }finally {
+                connection.close()
+            }
+        }
+    }
+
+    suspend fun UpdateParkingSpace(parkingSpace: ParkingSpace){
+        withContext(Dispatchers.IO){
+            val connection=establishConnection()
+            val sql ="UPDATE parkingspace SET state = 1 WHERE parking_lot = ? AND space_id = ?"
+            try {
+                val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+                preparedStatement.setString(1, parkingSpace.parking_lot)
+                preparedStatement.setInt(2, parkingSpace.space_id)
+
+                preparedStatement.executeUpdate()
+                Log.d("Mysqlhelper","成功更改信息")
+            }catch (e:Exception){
+                e.printStackTrace()
+            }finally {
+                connection.close()
+            }
+        }
+    }
+
 }

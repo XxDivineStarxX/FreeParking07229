@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.activity)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     //implementation(files("libs\\glide-3.6.0.jar"))
     implementation("com.github.bumptech.glide:glide:4.16.0")
     testImplementation(libs.junit)
@@ -79,5 +80,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 
 }

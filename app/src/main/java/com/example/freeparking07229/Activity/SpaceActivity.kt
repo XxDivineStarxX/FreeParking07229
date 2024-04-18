@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.notify
 
 class SpaceActivity : AppCompatActivity() {
 
@@ -50,7 +51,7 @@ class SpaceActivity : AppCompatActivity() {
             }
             if(parkingSpaceList.isNotEmpty()){
                 val parkingSpaceList1 = parkingSpaceList.subList(0,5).toList()
-                val parkingSpaceList2 = parkingSpaceList.subList(5,10).toList()
+                val parkingSpaceList2 = parkingSpaceList.subList(5,parkingSpaceList.size).toList()
 
                 val layoutManager1 = LinearLayoutManager(this@SpaceActivity)
                 val layoutManager2 = LinearLayoutManager(this@SpaceActivity)
@@ -69,6 +70,52 @@ class SpaceActivity : AppCompatActivity() {
             }else{
 
                 Log.d("SpaceActivity","parkingSpaceList为空")
+            }
+        }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+
+        val parkingSpaceRv1 = findViewById<RecyclerView>(R.id.space_recyclerView1)
+        val parkingSpaceRv2 = findViewById<RecyclerView>(R.id.space_recyclerView2)
+
+        val parkingName=intent.getStringExtra(PARKINGLOT_NAME)
+
+        CoroutineScope(Dispatchers.Main).launch{
+            val parkingSpaceList:ArrayList<ParkingSpace> = withContext(Dispatchers.IO){
+                if(parkingName!=null){
+                    mysqlHelper.getParkSpaceInfoByName(parkingName)
+
+                }
+                else{
+                    val list = ArrayList<ParkingSpace>()
+                    list.add(ParkingSpace())
+                    list
+                }
+
+            }
+            if(parkingSpaceList.isNotEmpty()){
+                val parkingSpaceList1 = parkingSpaceList.subList(0,5).toList()
+                val parkingSpaceList2 = parkingSpaceList.subList(5,parkingSpaceList.size).toList()
+
+                val layoutManager1 = LinearLayoutManager(this@SpaceActivity)
+                val layoutManager2 = LinearLayoutManager(this@SpaceActivity)
+
+                parkingSpaceRv1.layoutManager = layoutManager1
+                parkingSpaceRv2.layoutManager = layoutManager2
+
+                layoutManager1.orientation=LinearLayoutManager.HORIZONTAL
+                layoutManager2.orientation=LinearLayoutManager.HORIZONTAL
+
+                val adapter1 = ParkingSpaceRvAdapter(this@SpaceActivity, parkingSpaceList1)
+                val adapter2 = ParkingSpaceRvAdapter(this@SpaceActivity, parkingSpaceList2)
+                parkingSpaceRv1.adapter = adapter1
+                parkingSpaceRv2.adapter = adapter2
+
+            }else{
+
+                Log.d("SpaceActivity","RESTART,parkingSpaceList为空")
             }
         }
     }

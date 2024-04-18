@@ -3,12 +3,14 @@ package com.example.freeparking07229.Adapter
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.freeparking07229.Activity.ParkingInfoActivity
+import com.example.freeparking07229.Activity.ReservationActivity
 import com.example.freeparking07229.Model.ParkingSpace
 import com.example.freeparking07229.R
 
@@ -25,7 +27,13 @@ class ParkingSpaceRvAdapter(val context:Context, val parkingSpaceList:List<Parki
         val holder =  ViewHolder(view)
         holder.itemView.setOnClickListener {
             val position = holder.adapterPosition
-            val parkinglot = parkingSpaceList[position]
+            val space = parkingSpaceList[position]
+            Log.i("ParkingSpaceRvAdapter","车位"+space.space_id)
+            val intent = Intent(context, ReservationActivity::class.java).apply {
+                putExtra(ReservationActivity.SPACE_SELECTED,space.space_id)
+                putExtra(ReservationActivity.PARKING_LOT_SELECTED,space.parking_lot)
+            }
+            context.startActivity(intent)
             //点击预约该车位
 
         }
