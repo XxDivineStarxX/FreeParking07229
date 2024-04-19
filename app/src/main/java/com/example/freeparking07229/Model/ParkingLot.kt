@@ -9,4 +9,5 @@ data class ParkingLot(var longitude:Double=0.0,
                       var description:String="",
                       var space_number:Int=0,
                       var parking_picture:String="",
-                      var space_available:Int=0):Serializable
+                      var space_available:Int=0,
+                      var admin:String=""):Serializable

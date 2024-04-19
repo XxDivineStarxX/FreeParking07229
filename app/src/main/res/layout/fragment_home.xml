@@ -250,7 +250,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:backgroundTint="@color/junkie_parking_orange_500"
-                    android:src="@drawable/baseline_person_24" />
+                    android:src="@drawable/baseline_application_24" />
 
                 <TextView
                     android:elevation="20dp"
@@ -258,7 +258,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:gravity="center"
-                    android:text="身份更改"
+                    android:text="停车场申请"
                     android:textColor="@color/black"
                     android:paddingBottom="5dp"
                     android:textStyle="bold" />

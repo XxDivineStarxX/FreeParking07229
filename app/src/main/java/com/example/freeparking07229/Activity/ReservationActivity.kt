@@ -44,6 +44,7 @@ import java.io.File
 class ReservationActivity : AppCompatActivity() {
 
     companion object{
+        //Extra
         val SPACE_SELECTED = "0"
         val PARKING_LOT_SELECTED = "1"
     }

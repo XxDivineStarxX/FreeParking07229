@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.freeparking07229.Activity.AdminActivity
@@ -70,9 +72,26 @@ class HomeFragment : Fragment() {
         }
 
         binding.T1.setOnClickListener {
-            val intent = Intent(activity, AdminActivity::class.java)
-            startActivity(intent)
+            val identity = context?.getSharedPreferences("data", AppCompatActivity.MODE_PRIVATE)?.getInt("identity",0)
+            if(identity==1){
+                val intent = Intent(activity, AdminActivity::class.java)
+                startActivity(intent)
+            }else{
+                context?.let { it1 ->
+                    AlertDialog.Builder(it1).apply {
+                        setTitle("警告")
+                        setMessage("您不是停车场管理员！")
+                        setCancelable(false)
+                        setPositiveButton("OK") { dialog, which ->
+                        }
+                        show()
+                    }
+
+                }
+            }
         }
+
+
 
         binding.T2.setOnClickListener {
             val intent = Intent(activity, IdentityActivity::class.java)

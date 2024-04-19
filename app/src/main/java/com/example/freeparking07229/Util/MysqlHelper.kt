@@ -130,6 +130,26 @@ class MysqlHelper {
         item.parking_id
     }
 
+    suspend fun getNameInfoByAccount(account:String):String = withContext(Dispatchers.IO){
+        val connection=establishConnection()
+        val sql ="SELECT * FROM parkingcard WHERE account = ? "
+        var item=ParkingCard()
+        try {
+            val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+            preparedStatement.setString(1, account)
+            val rs:ResultSet=preparedStatement.executeQuery()
+
+            if(rs.next()){
+                item.name=rs.getString("name")
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }finally {
+            connection.close()
+        }
+        item.name
+    }
+
     suspend fun getParkLotInfoByName(parkingLotName:String):ParkingLot = withContext(Dispatchers.IO){
         val connection=establishConnection()
         val sql ="SELECT * FROM parkinglot WHERE parking_name = ? "
@@ -148,6 +168,7 @@ class MysqlHelper {
                 item.space_number=rs.getInt("space_number")
                 item.parking_picture=rs.getString("parking_picture")
                 item.space_available=rs.getInt("space_available")
+                item.admin=rs.getString("admin")
                 Log.d("getParkLotInfoByName","成功获取到Item"+item.toString())
             }
         }catch (e:Exception){
@@ -158,6 +179,34 @@ class MysqlHelper {
         item
     }
 
+    suspend fun getParkLotInfoByAdmin(admin:String):ParkingLot = withContext(Dispatchers.IO){
+        val connection=establishConnection()
+        val sql ="SELECT * FROM parkinglot WHERE admin = ? "
+        var item=ParkingLot()
+        try {
+            val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+            preparedStatement.setString(1, admin)
+            val rs:ResultSet=preparedStatement.executeQuery()
+
+            if(rs.next()){
+                item.longitude=rs.getDouble("longitude")
+                item.latitude=rs.getDouble("latitude")
+                item.location=rs.getString("location")
+                item.parking_name=rs.getString("parking_name")
+                item.description=rs.getString("description")
+                item.space_number=rs.getInt("space_number")
+                item.parking_picture=rs.getString("parking_picture")
+                item.space_available=rs.getInt("space_available")
+                item.admin=rs.getString("admin")
+                Log.d("getParkLotInfoByName","成功获取到Item"+item.toString())
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }finally {
+            connection.close()
+        }
+        item
+    }
     suspend fun getParkSpaceInfoByName(parkingLotName:String):ArrayList<ParkingSpace> = withContext(Dispatchers.IO){
         val connection=establishConnection()
         val sql ="SELECT * FROM parkingspace WHERE parking_lot = ? "
@@ -181,7 +230,32 @@ class MysqlHelper {
         }
         list
     }
-
+    suspend fun getUsingSpaceInfoByLotAndSpace(parkingLotName:String , spaceId:Int):UsingSpace = withContext(Dispatchers.IO){
+        val connection=establishConnection()
+        val sql ="SELECT * FROM usingspace WHERE parking_lot = ? AND space_id = ?"
+        var item = UsingSpace()
+        try {
+            val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+            preparedStatement.setString(1, parkingLotName)
+            preparedStatement.setInt(2, spaceId)
+            val rs:ResultSet=preparedStatement.executeQuery()
+            if(rs.next()){
+                item.parking_lot = rs.getString("parking_lot")
+                item.space_id=rs.getInt("space_id")
+                item.parking_id=rs.getString("parking_id")
+                item.car_number=rs.getString("car_number")
+                item.is_reserved=rs.getInt("is_reserved")
+                item.lock_time=rs.getTimestamp("lock_time")
+                item.time=rs.getString("time")
+                item.cost=rs.getBigDecimal("cost").toDouble()
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }finally {
+            connection.close()
+        }
+        item
+    }
     suspend fun getParkCardInfoByAccount(account:String):ParkingCard = withContext(Dispatchers.IO){
         val connection=establishConnection()
         val sql ="SELECT * FROM parkingcard WHERE account = ? "
