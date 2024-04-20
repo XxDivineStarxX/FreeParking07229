@@ -471,6 +471,40 @@ class MysqlHelper {
 
     }
 
+    suspend fun updateParkingCard(parkingCard: ParkingCard){
+        withContext(Dispatchers.IO){
+                val connection = establishConnection()
+                val sql1="DELETE FROM parkingcard WHERE account = ?"
+                val sql =
+                    "INSERT INTO parkingcard (parking_id,account,name,sex,id_number,car_number,person_picture,phone_number)" +
+                            "VALUES(?,?,?,?,?,?,?,?)"
+                try {
+                    val preparedStatement1: PreparedStatement = connection.prepareStatement(sql1)
+                    preparedStatement1.setString(1, parkingCard.account)
+                    preparedStatement1.executeUpdate()
+
+                    val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+                    preparedStatement.setString(1, parkingCard.parking_id)
+                    preparedStatement.setString(2, parkingCard.account)
+                    preparedStatement.setString(3, parkingCard.name)
+                    preparedStatement.setString(4, parkingCard.sex)
+                    preparedStatement.setString(5, parkingCard.id_number)
+                    preparedStatement.setString(6, parkingCard.car_number)
+                    preparedStatement.setString(7, parkingCard.person_picture)
+                    preparedStatement.setString(8, parkingCard.phone_number)
+
+                    preparedStatement.executeUpdate()
+                    Log.d("Mysqlhelper", "成功修改一项用户信息")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    connection.close()
+                }
+        }
+
+
+
+    }
     suspend fun updateUserIdentityToAdmin(account:String){
         withContext(Dispatchers.IO){
             val connection=establishConnection()
