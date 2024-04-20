@@ -51,7 +51,7 @@ class LoginActivity : AppCompatActivity() {
                         putInt("identity",identity)//将用户身份存入SP
                         apply()
                     }
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                     startActivity(intent)
                 } else {
                     // Failed login, show error message

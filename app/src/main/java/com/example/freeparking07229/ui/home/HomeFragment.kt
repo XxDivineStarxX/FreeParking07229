@@ -38,9 +38,6 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        binding.F1
-
-
         var view =  inflater.inflate(R.layout.fragment_home, container, false)
 
         binding.F1.setOnClickListener {

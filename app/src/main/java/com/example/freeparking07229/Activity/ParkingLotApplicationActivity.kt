@@ -126,7 +126,7 @@ class ParkingLotApplicationActivity : AppCompatActivity() {
                             parkinglotNameEdit.text.toString(),
                             parkinglotDecEdit.text.toString(),
                             parkinglotNumEdit.text.toString().toInt(),
-                            "",
+                            "https://x0.ifengimg.com/ucms/2022_02/106D526F5A419C1A6D2B4EDAE2903CF87C102049_size572_w1920_h1280.jpg",
                             parkinglotNumEdit.text.toString().toInt(),
                             parkinglotAdminEdit.text.toString())
                         //停车场更新
