@@ -99,15 +99,21 @@ class AdminActivity : AppCompatActivity() {
 
 
         findViewById<LinearLayout>(R.id.admin_getcar).setOnClickListener {
-            val intent = Intent(this,SpaceActivity::class.java)
+            val intent = Intent(this,SpaceActivity::class.java).apply {
+                putExtra(SpaceActivity.PARKINGLOT_NAME,parkingLot.parking_name)
+            }
             this.getSharedPreferences("data", MODE_PRIVATE).edit().apply {
-                putInt("mode",ParkingSpaceRvAdapter.INSERT_MODE)
+                putInt("mode",ParkingSpaceRvAdapter.DELETE_MODE)
                 apply()
             }
+            startActivity(intent)
         }
 
         findViewById<LinearLayout>(R.id.admin_update).setOnClickListener {
-            val intent = Intent(this,UpdateParkingLotActivity::class.java)
+            val intent = Intent(this,ParkingLotApplicationActivity::class.java).apply {
+                putExtra(ParkingLotApplicationActivity.PARKING_LOT_NAME,parkingLot.parking_name)
+                putExtra(ParkingLotApplicationActivity.FORM_MODE,ParkingLotApplicationActivity.UPDATE)
+            }
             startActivity(intent)
         }
 

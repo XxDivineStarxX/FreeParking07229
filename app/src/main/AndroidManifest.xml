@@ -20,6 +20,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.ParkingLotApplicationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.CreateNewReservationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.CreateNewUsingSpaceActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.UpdateParkingLotActivity"
             android:exported="false" />
 

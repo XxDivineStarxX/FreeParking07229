@@ -16,6 +16,7 @@ import com.example.freeparking07229.Activity.AdminActivity
 import com.example.freeparking07229.Activity.HistoryActivity
 import com.example.freeparking07229.Activity.IdentityActivity
 import com.example.freeparking07229.Activity.ParkingInfoActivity
+import com.example.freeparking07229.Activity.ParkingLotApplicationActivity
 import com.example.freeparking07229.Activity.ParkingMainActivity
 import com.example.freeparking07229.Activity.ReservationActivity
 import com.example.freeparking07229.Activity.userInfoActivity
@@ -94,8 +95,29 @@ class HomeFragment : Fragment() {
 
 
         binding.T2.setOnClickListener {
-            val intent = Intent(activity, IdentityActivity::class.java)
-            startActivity(intent)
+            val myidentity = activity?.getSharedPreferences("data", AppCompatActivity.MODE_PRIVATE)
+                ?.getInt("identity",0)
+            if(myidentity==1){
+                context?.let { it1 ->
+                    AlertDialog.Builder(it1).apply {
+                        setTitle("警告")
+                        setMessage("您已经是一所停车场的管理员，无法重复申请")
+                        setCancelable(false)
+                        setPositiveButton("OK") { dialog, which ->
+                        }
+                        show()
+                    }
+                }
+            }
+            else{
+                val intent = Intent(activity, ParkingLotApplicationActivity::class.java).apply {
+                    putExtra(
+                        ParkingLotApplicationActivity.FORM_MODE,
+                        ParkingLotApplicationActivity.INSERT
+                    )
+                }
+                startActivity(intent)
+            }
         }
 
         return root

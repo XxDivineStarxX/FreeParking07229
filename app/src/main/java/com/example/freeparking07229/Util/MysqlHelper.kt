@@ -316,16 +316,23 @@ class MysqlHelper {
         }
     }
 
-    suspend fun UpdateParkingSpace(parkingSpace: ParkingSpace){
+    suspend fun UpdateParkingSpace(parkingSpace: ParkingSpace,state:Int,space_available: Int){
         withContext(Dispatchers.IO){
             val connection=establishConnection()
-            val sql ="UPDATE parkingspace SET state = 1 WHERE parking_lot = ? AND space_id = ?"
+            val sql1 ="UPDATE parkingspace SET state = ? WHERE parking_lot = ? AND space_id = ?"
+            val sql2 ="UPDATE parkinglot SET space_available = ? WHERE parking_name = ?"
             try {
-                val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
-                preparedStatement.setString(1, parkingSpace.parking_lot)
-                preparedStatement.setInt(2, parkingSpace.space_id)
+                val preparedStatement1: PreparedStatement = connection.prepareStatement(sql1)
+                val preparedStatement2: PreparedStatement = connection.prepareStatement(sql2)
+                preparedStatement1.setInt(1, state)
+                preparedStatement1.setString(2, parkingSpace.parking_lot)
+                preparedStatement1.setInt(3, parkingSpace.space_id)
 
-                preparedStatement.executeUpdate()
+                preparedStatement2.setInt(1, space_available-1)
+                preparedStatement2.setString(2, parkingSpace.parking_lot)
+
+                preparedStatement1.executeUpdate()
+                preparedStatement2.executeUpdate()
                 Log.d("Mysqlhelper","成功更改信息")
             }catch (e:Exception){
                 e.printStackTrace()
@@ -334,5 +341,154 @@ class MysqlHelper {
             }
         }
     }
+
+    suspend fun insertParkingSpace(parkingSpace: ParkingSpace){
+        withContext(Dispatchers.IO){
+            val connection=establishConnection()
+            val sql ="INSERT INTO parkingspace (parking_lot,space_id,state)" +
+                    "VALUES(?,?,0)"
+
+            try {
+                val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+
+                preparedStatement.setString(1, parkingSpace.parking_lot)
+                preparedStatement.setInt(2, parkingSpace.space_id)
+
+                preparedStatement.executeUpdate()
+                Log.d("Mysqlhelper","成功创建新车位信息")
+            }catch (e:Exception){
+                e.printStackTrace()
+            }finally {
+                connection.close()
+            }
+        }
+    }
+
+    suspend fun deleteUsingSpaceByParkingLotAndSpace(parkingLot: String,space_id:Int){
+        withContext(Dispatchers.IO){
+            val connection=establishConnection()
+            val sql ="DELETE FROM usingspace WHERE parking_lot = ? AND space_id = ?"
+            try {
+                val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+                preparedStatement.setString(1, parkingLot)
+                preparedStatement.setInt(2, space_id)
+
+                preparedStatement.executeUpdate()
+                Log.d("Mysqlhelper","成功删除usingspace信息")
+            }catch (e:Exception){
+                e.printStackTrace()
+            }finally {
+                connection.close()
+            }
+        }
+    }
+
+    suspend fun updateParkingSpaceToZeroByParkingLotAndSpace(parkingLot: String,space_id:Int,space_available:Int){
+        withContext(Dispatchers.IO){
+            val connection=establishConnection()
+            val sql1 ="UPDATE parkingspace SET state = 0 WHERE parking_lot = ? AND space_id = ?"
+            val sql2 ="UPDATE parkinglot SET space_available = ? WHERE parking_name = ?"
+            try {
+                val preparedStatement1: PreparedStatement = connection.prepareStatement(sql1)
+                val preparedStatement2: PreparedStatement = connection.prepareStatement(sql2)
+                preparedStatement1.setString(1, parkingLot)
+                preparedStatement1.setInt(2, space_id)
+                preparedStatement2.setInt(1, space_available+1)
+                preparedStatement2.setString(2, parkingLot)
+
+                preparedStatement1.executeUpdate()
+                preparedStatement2.executeUpdate()
+                Log.d("Mysqlhelper","成功删除usingspace信息")
+            }catch (e:Exception){
+                e.printStackTrace()
+            }finally {
+                connection.close()
+            }
+        }
+    }
+
+    suspend fun insertOrUpdateParkingLot(parkingLot: ParkingLot,mode:Int,old_parking:String){
+        withContext(Dispatchers.IO){
+            if(mode ==0){//mode =0 说明是插入新的停车场{
+                val connection = establishConnection()
+                val sql =
+                    "INSERT INTO parkinglot (longitude,latitude,location,parking_name,description,space_number,parking_picture,space_available,admin)" +
+                            "VALUES(?,?,?,?,?,?,?,?,?)"
+                try {
+                    val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+                    preparedStatement.setDouble(1, parkingLot.longitude)
+                    preparedStatement.setDouble(2, parkingLot.latitude)
+                    preparedStatement.setString(3, parkingLot.location)
+                    preparedStatement.setString(4, parkingLot.parking_name)
+                    preparedStatement.setString(5, parkingLot.description)
+                    preparedStatement.setInt(6, parkingLot.space_number)
+                    preparedStatement.setString(7, parkingLot.parking_picture)
+                    preparedStatement.setInt(8, parkingLot.space_available)
+                    preparedStatement.setString(9, parkingLot.admin)
+
+                    preparedStatement.executeUpdate()
+                    Log.d("Mysqlhelper", "成功添加一项新停车场信息")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    connection.close()
+                }
+            }else if(mode == 1){//mode =0 说明是更新停车场，先删除再插入
+                val connection = establishConnection()
+                val sql1="DELETE FROM parkinglot WHERE parking_name = ?"
+                val sql =
+                    "INSERT INTO parkinglot (longitude,latitude,location,parking_name,description,space_number,parking_picture,space_available,admin)" +
+                            "VALUES(?,?,?,?,?,?,?,?,?)"
+                try {
+                    val preparedStatement1: PreparedStatement = connection.prepareStatement(sql1)
+                    preparedStatement1.setString(1, old_parking)
+                    preparedStatement1.executeUpdate()
+
+                    val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+                    preparedStatement.setDouble(1, parkingLot.longitude)
+                    preparedStatement.setDouble(2, parkingLot.latitude)
+                    preparedStatement.setString(3, parkingLot.location)
+                    preparedStatement.setString(4, parkingLot.parking_name)
+                    preparedStatement.setString(5, parkingLot.description)
+                    preparedStatement.setInt(6, parkingLot.space_number)
+                    preparedStatement.setString(7, parkingLot.parking_picture)
+                    preparedStatement.setInt(8, parkingLot.space_available)
+                    preparedStatement.setString(9, parkingLot.admin)
+
+                    preparedStatement.executeUpdate()
+                    Log.d("Mysqlhelper", "成功添加一项新停车场信息")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    connection.close()
+                }
+            }else{
+                Log.d("MysqlHelper","insertOrUpdateParkingLot参数错误")
+            }
+        }
+
+
+
+    }
+
+    suspend fun updateUserIdentityToAdmin(account:String){
+        withContext(Dispatchers.IO){
+            val connection=establishConnection()
+            val sql="UPDATE user SET identity =1 WHERE account = ?"
+            try {
+                val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+
+                preparedStatement.setString(1, account)
+                preparedStatement.executeUpdate()
+
+                Log.d("Mysqlhelper","成功更改${account}身份信息")
+            }catch (e:Exception){
+                e.printStackTrace()
+            }finally {
+                connection.close()
+            }
+        }
+    }
+
 
 }

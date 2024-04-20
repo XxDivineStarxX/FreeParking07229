@@ -2,17 +2,14 @@ package com.example.freeparking07229.Adapter
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.*
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.example.freeparking07229.Activity.ParkingInfoActivity
+import com.example.freeparking07229.Activity.CreateNewReservationActivity
+import com.example.freeparking07229.Activity.CreateNewUsingSpaceActivity
 import com.example.freeparking07229.Activity.ReservationActivity
 import com.example.freeparking07229.Model.ParkingSpace
 import com.example.freeparking07229.Model.UsingSpace
@@ -30,6 +27,7 @@ class ParkingSpaceRvAdapter(val context:Context, val parkingSpaceList:List<Parki
             val RESERVATION_MODE = -1
             val CHECK_MODE = 0
             val INSERT_MODE = 1
+            val DELETE_MODE = 2
         }
     inner class ViewHolder(view: View):RecyclerView.ViewHolder(view){
         var space_card = view.findViewById<androidx.cardview.widget.CardView>(R.id.space_card)
@@ -70,6 +68,7 @@ class ParkingSpaceRvAdapter(val context:Context, val parkingSpaceList:List<Parki
 
                                 show()
                         }
+
                         }else {//车位被占用
                             var usingSpace = UsingSpace()
                             var info =""
@@ -106,9 +105,119 @@ class ParkingSpaceRvAdapter(val context:Context, val parkingSpaceList:List<Parki
                         }
                     }
 
-                    INSERT_MODE ->{
-                    Toast.makeText(context,"您已进入车位编辑模式",Toast.LENGTH_LONG).show()
+                    RESERVATION_MODE->{
+                        if(space.state!=0){
+                            AlertDialog.Builder(context).apply {
+                                setTitle("提示")
+                                setMessage("该车位已被占用或预约。")
+                                setCancelable(false)
+                                setPositiveButton("OK") { dialog, which ->
+                                }
+                                show()
+                            }
+                        }
+                        else{
+                            val intent = Intent(context, CreateNewReservationActivity::class.java).apply {
+                                putExtra(CreateNewReservationActivity.SPACE_SELECTED,space.space_id)
+                                putExtra(CreateNewReservationActivity.PARKING_LOT_SELECTED,space.parking_lot)
+                            }
+                            context.startActivity(intent)
+                        }
                     }
+
+                    INSERT_MODE ->{
+                        if(space.state!=0){
+                            AlertDialog.Builder(context).apply {
+                                setTitle("提示")
+                                setMessage("该车位已被占用或预约。")
+                                setCancelable(false)
+                                setPositiveButton("OK") { dialog, which ->
+                                }
+                                show()
+                            }
+                        }
+                        else{
+                            val intent = Intent(context, CreateNewUsingSpaceActivity::class.java).apply {
+                                putExtra(CreateNewUsingSpaceActivity.SPACE_SELECTED,space.space_id)
+                                putExtra(CreateNewUsingSpaceActivity.PARKING_LOT_SELECTED,space.parking_lot)
+                            }
+                            context.startActivity(intent)
+                        }
+                    }
+
+                    DELETE_MODE ->{
+                        if(space.state==0){
+                            AlertDialog.Builder(context).apply {
+                                setTitle("警告")
+                                setMessage("该车位为空闲，无法操作")
+                                setCancelable(false)
+                                setPositiveButton("OK") { dialog, which ->
+                                }
+                                show()
+                            }
+                        }
+                        else if(space.state==1){
+                            AlertDialog.Builder(context).apply {
+                                setTitle("提示")
+                                setMessage("该车位已预约，暂无车停放而无法取车，是否取消预约？")
+                                setCancelable(false)
+                                setPositiveButton("OK") { dialog, which ->
+                                    run {
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            withContext(Dispatchers.IO) {
+                                                val spaceAvail = mysqlHelper.getParkLotInfoByName(space.parking_lot).space_available
+                                                mysqlHelper.deleteUsingSpaceByParkingLotAndSpace(
+                                                    space.parking_lot,
+                                                    space.space_id
+                                                )
+                                                mysqlHelper.updateParkingSpaceToZeroByParkingLotAndSpace(
+                                                    space.parking_lot,
+                                                    space.space_id,
+                                                    spaceAvail)
+                                            }
+                                            holder.space_card.setCardBackgroundColor(ContextCompat.getColor(context,R.color.white))
+                                            holder.space_state.text = "空闲"
+                                            holder.space_state.setTextColor(ContextCompat.getColor(context,R.color.black))
+                                        }
+
+                                    }
+                                }
+                                show()
+                            }
+                        }
+                        else if(space.state==2){
+                            AlertDialog.Builder(context).apply {
+                                setTitle("提示")
+                                setMessage("是否确认取车？")
+                                setCancelable(false)
+                                setPositiveButton("OK") { dialog, which ->
+                                    run {
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            withContext(Dispatchers.IO) {
+                                                val spaceAvail = mysqlHelper.getParkLotInfoByName(space.parking_lot).space_available
+                                                mysqlHelper.deleteUsingSpaceByParkingLotAndSpace(
+                                                    space.parking_lot,
+                                                    space.space_id
+                                                )
+                                                mysqlHelper.updateParkingSpaceToZeroByParkingLotAndSpace(
+                                                    space.parking_lot,
+                                                    space.space_id,
+                                                    spaceAvail
+                                                )
+                                            }
+                                            holder.space_card.setCardBackgroundColor(ContextCompat.getColor(context,R.color.white))
+                                            holder.space_state.text = "空闲"
+                                            holder.space_state.setTextColor(ContextCompat.getColor(context,R.color.black))
+                                        }
+
+                                    }
+                                }
+                                show()
+                            }
+                        }
+                    }
+
+
 
                     else ->{
                         val intent = Intent(context, ReservationActivity::class.java).apply {

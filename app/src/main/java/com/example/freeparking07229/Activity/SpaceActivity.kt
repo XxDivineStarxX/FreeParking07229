@@ -1,6 +1,9 @@
 package com.example.freeparking07229.Activity
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +28,16 @@ class SpaceActivity : AppCompatActivity() {
         val PARKINGLOT_NAME ="PARKING_LOT_NAME"
     }
     val mysqlHelper = MysqlHelper()
+//    val hander =object:Handler(Looper.getMainLooper()){
+//        override fun handleMessage(msg: Message) {
+//            // 在这里可以进行UI操作
+//            when (msg.what) {
+//                updateList -> textView.text = "Nice to meet you"
+//            }
+//        }
+//
+//    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_space)
@@ -72,10 +85,12 @@ class SpaceActivity : AppCompatActivity() {
                 Log.d("SpaceActivity","parkingSpaceList为空")
             }
         }
+
+
     }
 
-    override fun onRestart() {
-        super.onRestart()
+    override fun onResume() {
+        super.onResume()
 
         val parkingSpaceRv1 = findViewById<RecyclerView>(R.id.space_recyclerView1)
         val parkingSpaceRv2 = findViewById<RecyclerView>(R.id.space_recyclerView2)
@@ -119,4 +134,5 @@ class SpaceActivity : AppCompatActivity() {
             }
         }
     }
+
 }
