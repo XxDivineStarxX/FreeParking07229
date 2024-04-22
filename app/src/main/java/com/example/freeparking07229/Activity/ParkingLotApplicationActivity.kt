@@ -226,7 +226,7 @@ class ParkingLotApplicationActivity : AppCompatActivity() {
                         findViewById<ImageView>(R.id.application_parkinglot_img).setImageBitmap(bitmap)
                         val imgPath = getPathFromUri(uri)
                         val myurl ="http://10.0.2.2:8080/upload"
-                        val imgName = "image"+account+".jpg"
+                        val imgName = "image"+account+"_"+System.currentTimeMillis().toString()+".jpg"
                         val requestBody = MultipartBody.Builder()
                             .setType(MultipartBody.FORM)
                             .addFormDataPart("file",imgName,
@@ -282,18 +282,6 @@ class ParkingLotApplicationActivity : AppCompatActivity() {
 
     }
 
-    private fun rotateIfRequired(bitmap: Bitmap): Bitmap {
-        val exif = ExifInterface(outputImage.path)
-        val orientation = exif.getAttributeInt(
-            ExifInterface.TAG_ORIENTATION,
-            ExifInterface.ORIENTATION_NORMAL)
-        return when (orientation) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90)
-            ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180)
-            ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270)
-            else -> bitmap
-        }
-    }
     private fun rotateBitmap(bitmap: Bitmap, degree: Int): Bitmap {
         val matrix = Matrix()
         matrix.postRotate(degree.toFloat())

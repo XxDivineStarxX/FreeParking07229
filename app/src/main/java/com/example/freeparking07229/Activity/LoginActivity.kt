@@ -61,10 +61,9 @@ class LoginActivity : AppCompatActivity() {
                         putString("account",username)//将账户名存入SP
                         putInt("identity",identity)//将用户身份存入SP
                         putBoolean("isValid",flag)
+                        putString("name",name)
                         apply()
                     }
-
-                    editor.putString("name",name)
                     val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                     startActivity(intent)
 
