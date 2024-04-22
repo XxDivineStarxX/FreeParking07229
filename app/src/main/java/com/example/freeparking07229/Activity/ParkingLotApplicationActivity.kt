@@ -75,8 +75,8 @@ class ParkingLotApplicationActivity : AppCompatActivity() {
     lateinit var imageUri: Uri
     val client = OkHttpClient()
     val mysqlHelper = MysqlHelper()
-    val domain="http://10.0.2.2:5000"
-    var img_url:String ="http://10.0.2.2:5000/parking_imgs/"
+    val domain="http://10.0.2.2:8080"
+    var img_url:String ="http://10.0.2.2:8080/upload"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_parking_lot_application)
@@ -215,6 +215,7 @@ class ParkingLotApplicationActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        val account = getSharedPreferences("data", MODE_PRIVATE).getString("account","null")
         when (requestCode) {
             2 -> {
                 if (resultCode == Activity.RESULT_OK && data != null) {
@@ -223,10 +224,11 @@ class ParkingLotApplicationActivity : AppCompatActivity() {
                         val bitmap = getBitmapFromUri(uri)
                         findViewById<ImageView>(R.id.application_parkinglot_img).setImageBitmap(bitmap)
                         val imgPath = getPathFromUri(uri)
-                        val myurl ="http://10.0.2.2:5000/parking_imgs"
+                        val myurl ="http://10.0.2.2:8080/upload"
+                        val imgName = "image"+account+".jpg"
                         val requestBody = MultipartBody.Builder()
                             .setType(MultipartBody.FORM)
-                            .addFormDataPart("image","image.jpg",
+                            .addFormDataPart("file",imgName,
                                 File(imgPath).asRequestBody("image/jpeg".toMediaTypeOrNull())
                             )
                         val request= Request.Builder().url(myurl)
