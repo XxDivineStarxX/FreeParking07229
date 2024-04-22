@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -43,6 +44,11 @@ class userInfoActivity : AppCompatActivity() {
 
         val userInfoViewModel = UserInfoViewModel()
         val account = getSharedPreferences("data", MODE_PRIVATE).getString("account","111")
+        val name = getSharedPreferences("data", MODE_PRIVATE).getString("name","null")
+
+        if(name=="null"){
+            Toast.makeText(this,"请立刻完善个人信息",Toast.LENGTH_LONG).show()
+        }
 
         CoroutineScope(Dispatchers.Main).launch {
             val parkingCard = withContext(Dispatchers.IO){

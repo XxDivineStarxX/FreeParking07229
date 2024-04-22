@@ -91,6 +91,8 @@ class EditUserInfoActivity : AppCompatActivity() {
                 setPositiveButton("OK") { dialog, which ->
                     CoroutineScope(Dispatchers.Main).launch {
                         withContext(Dispatchers.IO) {
+                            if(card_id=="")
+                                card_id=(10000..99999).random().toString()
                             var _parkingCard = account?.let { it1 ->
                                 ParkingCard(
                                     card_id,
@@ -111,6 +113,13 @@ class EditUserInfoActivity : AppCompatActivity() {
                         setNegativeButton("Cancel") { dialog, which ->
                         }
                     }
+
+                    getSharedPreferences("data", MODE_PRIVATE).edit().apply {
+                        putBoolean("isValid",true)
+                        putString("name",nameET.text.toString())
+                        apply()
+                    }
+
                     finish()
                 }
                 setNegativeButton("Cancel") { dialog, which ->

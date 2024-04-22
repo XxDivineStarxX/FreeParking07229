@@ -16,6 +16,12 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_home)
+        val isValid = getSharedPreferences("data", MODE_PRIVATE).getBoolean("isValid",false)
+
+        if(!isValid){
+            val intent = Intent(this, userInfoActivity::class.java)
+            startActivity(intent)
+        }
 
         findViewById<ImageButton>(R.id.F1).setOnClickListener {
             Log.d("HomeFragment","检测到点击")

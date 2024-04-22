@@ -27,6 +27,10 @@ class LoginActivity : AppCompatActivity() {
         val loginButton: Button = findViewById(R.id.loginButton)
         val registerButton: Button = findViewById(R.id.registerButton)
         val progressBar: ProgressBar = findViewById(R.id.progressbar)
+        var flag=false;//未实名为false，已经实名为true
+        var name = ""//真正名字
+
+        val account = getSharedPreferences("data", MODE_PRIVATE).getString("account","null")
 
         loginButton.setOnClickListener {
             val username = usernameEditText.text.toString()
@@ -39,6 +43,12 @@ class LoginActivity : AppCompatActivity() {
                 withContext(Dispatchers.IO) {
                     isLoginSuccessful = mySQLHelper.checkLogin(username, password)
                     identity = mySQLHelper.LoginIdentity(username, password)
+                    name = mySQLHelper.getNameInfoByAccount(username)
+                    if(name!="")
+                        flag=true
+                    else
+                        flag=false
+
                 }
 //                val identity = withContext(Dispatchers.IO) {
 //                    mySQLHelper.LoginIdentity(username, password)
@@ -47,12 +57,20 @@ class LoginActivity : AppCompatActivity() {
                 if (isLoginSuccessful) {
                     // Successful login, navigate to another activity
                     val editor = getSharedPreferences("data", MODE_PRIVATE).edit().apply{
+                        clear()
                         putString("account",username)//将账户名存入SP
                         putInt("identity",identity)//将用户身份存入SP
+                        putBoolean("isValid",flag)
                         apply()
                     }
+
+                    editor.putString("name",name)
                     val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                     startActivity(intent)
+
+
+
+
                 } else {
                     // Failed login, show error message
                     Toast.makeText(

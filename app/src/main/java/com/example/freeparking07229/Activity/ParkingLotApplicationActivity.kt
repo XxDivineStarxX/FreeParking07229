@@ -89,6 +89,7 @@ class ParkingLotApplicationActivity : AppCompatActivity() {
         var oldSpaceNum = 0
         val parkingInfoViewModel = ParkingLotApplicationViewModel()
 
+        requestStoragePermission()
         val parkinglotNameEdit = findViewById<EditText>(R.id.application_parkinglot_name)
         val parkinglotLgtEdit = findViewById<EditText>(R.id.application_longitude)
         val parkinglotLatEdit = findViewById<EditText>(R.id.application_latitude)
