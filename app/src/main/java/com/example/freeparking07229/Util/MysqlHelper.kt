@@ -150,6 +150,26 @@ class MysqlHelper {
         item.name
     }
 
+    suspend fun getCardIdByAccount(account:String):String = withContext(Dispatchers.IO){
+        val connection=establishConnection()
+        val sql ="SELECT * FROM parkingcard WHERE account = ? "
+        var item=ParkingCard()
+        try {
+            val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
+            preparedStatement.setString(1, account)
+            val rs:ResultSet=preparedStatement.executeQuery()
+
+            if(rs.next()){
+                item.parking_id=rs.getString("parking_id")
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }finally {
+            connection.close()
+        }
+        item.parking_id
+    }
+
     suspend fun getParkLotInfoByName(parkingLotName:String):ParkingLot = withContext(Dispatchers.IO){
         val connection=establishConnection()
         val sql ="SELECT * FROM parkinglot WHERE parking_name = ? "

@@ -2,6 +2,7 @@ package com.example.freeparking07229.Activity
 
 import android.Manifest
 import android.app.Activity
+import android.content.ContentValues
 import android.content.EntityIterator
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -35,6 +36,7 @@ import com.bumptech.glide.Glide
 import com.example.freeparking07229.Model.ParkingLot
 import com.example.freeparking07229.Model.ParkingSpace
 import com.example.freeparking07229.R
+import com.example.freeparking07229.Util.MySqliteDbHelper
 import com.example.freeparking07229.Util.MysqlHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -75,6 +77,7 @@ class ParkingLotApplicationActivity : AppCompatActivity() {
     lateinit var imageUri: Uri
     val client = OkHttpClient()
     val mysqlHelper = MysqlHelper()
+    val mySqliteDbHelper = MySqliteDbHelper(this, "Local.db", 1)
     val domain="http://10.0.2.2:8080"
     var img_url:String ="http://10.0.2.2:8080/upload"
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -196,6 +199,12 @@ class ParkingLotApplicationActivity : AppCompatActivity() {
                                     putInt("identity",1)
                                     apply()
                                 }
+
+                            val value = ContentValues().apply {
+                                put("identity",1)
+                            }
+                            mySqliteDbHelper.writableDatabase.update("TempData",value,"account = ?",
+                                arrayOf(account))
                         }
                     }
                     finish()

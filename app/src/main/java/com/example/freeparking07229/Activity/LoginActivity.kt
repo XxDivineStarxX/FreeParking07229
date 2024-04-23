@@ -1,5 +1,6 @@
 package com.example.freeparking07229.Activity
 
+import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.freeparking07229.MainActivity
 import com.example.freeparking07229.R
+import com.example.freeparking07229.Util.MySqliteDbHelper
 import com.example.freeparking07229.Util.MysqlHelper
 import kotlinx.coroutines.*
 
@@ -27,10 +29,16 @@ class LoginActivity : AppCompatActivity() {
         val loginButton: Button = findViewById(R.id.loginButton)
         val registerButton: Button = findViewById(R.id.registerButton)
         val progressBar: ProgressBar = findViewById(R.id.progressbar)
+
         var flag=false;//未实名为false，已经实名为true
         var name = ""//真正名字
+        var card_id=""
+
+        val dbHelper = MySqliteDbHelper(this, "Local.db", 1)
 
         val account = getSharedPreferences("data", MODE_PRIVATE).getString("account","null")
+
+        initSqlDB()
 
         loginButton.setOnClickListener {
             val username = usernameEditText.text.toString()
@@ -44,6 +52,7 @@ class LoginActivity : AppCompatActivity() {
                     isLoginSuccessful = mySQLHelper.checkLogin(username, password)
                     identity = mySQLHelper.LoginIdentity(username, password)
                     name = mySQLHelper.getNameInfoByAccount(username)
+                    card_id = mySQLHelper.getCardIdByAccount(username)
                     if(name!="")
                         flag=true
                     else
@@ -64,11 +73,17 @@ class LoginActivity : AppCompatActivity() {
                         putString("name",name)
                         apply()
                     }
+
+                    val db = dbHelper.writableDatabase
+                    db.execSQL("delete from Tempdata")
+                    val value =ContentValues().apply {
+                        put("account",username)//将账户信息存入本地数据库
+                        put("identity",identity)
+                        put("card_id",card_id)
+                    }
+                    db.insert("Tempdata",null,value)
                     val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                     startActivity(intent)
-
-
-
 
                 } else {
                     // Failed login, show error message
@@ -86,5 +101,10 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun initSqlDB() {
+        val dbHelper = MySqliteDbHelper(this, "Local.db", 1)
+        dbHelper.writableDatabase
     }
 }
